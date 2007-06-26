@@ -1,0 +1,9 @@
+[% META title = 'VPN Key Revocation' -%]
+    
+    <form method="post" action="/ca/template/vpn/revoke">
+		<input type="hidden" name="type" value="dns">
+    <table>
+      <tr><td>DNS :</td><td><input type="text" name="data"></td></tr>
+    </table>
+    <input type="submit" name="Submit" value="Submit">
+    </form>

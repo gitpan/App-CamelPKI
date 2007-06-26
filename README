@@ -1,0 +1,104 @@
+App/CamelPKI version 0.01
+========================
+    
+
+INSTALLATION
+Make sure Module::Build and File::Slurp installed on your computer.
+
+To install this module type the following:
+   perl Build.PL
+   ./Build
+   ./Build test
+   ./Build install
+
+
+
+DEPENDENCIES
+This module requires these other modules and libraries:
+ B # mod_perl 
+ Error
+ NEXT
+ Class::Inspector
+ MIME::Base64
+ DateTime
+ Sys::Hostname
+ IO::Socket::INET
+ Crypt::OpenSSL::CA
+ Catalyst
+ Catalyst::Plugin::ConfigLoader
+ Catalyst::Plugin::Static::Simple
+ Catalyst::Action::RenderView
+ Catalyst::Engine::Apache
+ JSON
+ Catalyst::View::JSON
+ DBIx::Class
+ SQL::Translator
+ DBD::SQLite
+ Crypt::X509
+ IPC::Run
+
+
+HOWTO CamelPKI Quick and Fast
+1. Installation of the required softwares :
+Some applications must be installed in order CamelPKI to work :
+I give between parenthesis the name of the package in Ubuntu. Under gentoo, fonctionnalities
+are controled by use flags that are generally well explained.
+- apache (apache2) : php5 (libapache2-mod-php5), perl(libapache2-mod-perl2)
+- php (php5-cli) : mod_perl, mod_json(php5-json), curl(php-curl)
+- libssl0.9.8
+- libssl-dev
+- libnet-ssleay-perl
+- libdb4.3-dev
+
+2. Installation of the Perl Modules :
+You have to install some perl modules from CPAN in order to make work the application.
+(steps required to install a module from CPAN ca be found on Google). (During my installations i found that 3 required modules form Crypt::OpenSSL::CA are not installed ... FIXME : find these modules)
+install Module::Build File::Slurp MIME::Base64 Error DateTime Sys::Hostname  IO::Socket::INET Catalyst Catalyst::Plugin::ConfigLoader Catalyst::Plugin::Static::Simple Catalyst::Action::RenderView Catalyst::Engine::Apache JSON Catalyst::View::JSON DBIx::Class SQL::Translator DBD::SQLite Crypt::X509 IPC::Run Test::Group Test::More Test::Builder File::Which File::Slurp File::Find Cwd Errno LWP::Simple LWP::UserAgent Convert::ASN1 IO::Socket::SSL Catalyst::View::TT HTTP::Request::Form Data::Dump Crypt::OpenSSL::CA
+
+3. Extract the App-CamelPKI archive and create your own app_camelpki.yml (a sample ca be found 'app_camelpki.yml.sample').
+
+3. Key Ceremony - Preparing the application
+	Key ceremony is an important task to do. You have to generate your own
+	Certificates and Private Keys for the CA. A script has been développed in order
+	to do this easily :
+	$./Build
+	$./script/camel_pki_keyceremony.pl var/
+	From this point, the CA Certificate's and keys can be found in the var/ directory.
+	And now the tests :
+	./Build test
+
+4. Launch the server
+	Be sure, before this phase to complete your own config file (app_camlpki.yml)
+	If you have apache and mod_perl installed, you could launch the server with apache
+	$./script/start_stop_camel_pki.pl start (stop in order to stop it)
+
+	or you can use Catalyst itself :
+	$./script/camel_pki_server.pl
+	
+5.Generate Client's certificate in order to have permission to generate and issue
+	new client's certificates (we suppose key and certificates are contained in var/)
+	For this operation we will use openssl :
+
+	$ cat var/admin.key var/admin.pem >	admin.glob
+	$ openssl pkcs12 -in admin.glob -export -nodes -out cert.p12
+	
+	From this point, the file cert.p12 is a certificate in pkcs12 format.
+	It can be handled by your browser to authenticate on the PKI.
+
+
+TESTED PLATFORMS
+This package has been test under Ubuntu Edgy and Gentoo (2006.1 and 2007.0 as these
+lines are written.
+
+
+SAMPLES
+
+Please, consult t/php/README for php code samples
+ 
+
+COPYRIGHT AND LICENCE
+Copyright 2007 Siemens Business Services S.A.S., all rights reserved.
+
+This program is free software; you can redistribute it following the
+same terms as Perl itself.
+

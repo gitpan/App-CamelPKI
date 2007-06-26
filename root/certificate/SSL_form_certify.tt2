@@ -1,0 +1,16 @@
+[% META title = 'SSL Key Generation' -%]
+    
+    <form method="post" action="/ca/template/ssl/certify/bundle.pem">
+    <table>
+      <tr><td>Type :</td>
+      <td>
+      	<select name="template">
+      		<option value="SSLServer">SSLServer</option>
+	      	<option value="SSLClient">SSLCLient</option>
+    	</select>
+      </td></tr>
+      <tr><td>role :</td><td><input type="text" name="role"></td></tr>
+      <tr><td>DNS :</td><td><input type="text" name="dns"></td></tr>
+    </table>
+    <input type="submit" name="Submit" value="Submit">
+    </form>
