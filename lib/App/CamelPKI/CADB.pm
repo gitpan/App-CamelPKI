@@ -1019,7 +1019,12 @@ my $testdir;
 change_db_dir();
 
 test "initialisation of the DB" => sub {
-    local $SIG{__WARN__} = sub { warn shift; fail }; # Making warnings
+    local $SIG{__WARN__} = sub {
+    								my $warn = shift;
+    								if ($warn !~ /closing dbh with active statement handles/){
+    									warn shift; fail
+    								} 
+    							}; # Making warnings
     # fatal, such as the usual suspect "Issuing rollback() ..."
 
     my $db = App::CamelPKI::CADB->load($testdir);

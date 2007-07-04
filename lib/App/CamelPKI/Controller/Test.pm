@@ -40,7 +40,7 @@ welcome message for the C<salutation> key.  (For the fame of it,
 
 sub json_helloworld : Local : ActionClass("+App::CamelPKI::Action::JSON") {
     my ($self, $c, $input) = @_;
-    $c->stash->{salutation} = sprintf("Bonjour, %s %s !",
+    $c->stash->{salutation} = sprintf("Hello, %s %s !",
                                       $input->{prenom}, $input->{nom});
 }
 

@@ -26,7 +26,7 @@ $webserver->start(); END { $webserver->stop(); }
 
 create_camel_pki_conf_php();
 my $hello = run_php_script("01-apprentissage-JSONRPC.php");
-like($hello, qr/Bonjour, Dominique Quatravaux !/, "Réponse attendue trouvée !")
+like($hello, qr/Hello, Jeremie Klein !/, "Wanted answer found !")
     or warn $webserver->tail_error_logfile;
 
 

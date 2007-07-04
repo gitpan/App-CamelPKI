@@ -1,6 +1,8 @@
 Revision history for Camel-PKI
 
+0.02	2007/08/04
+		Correction of bugs to pass tests.
 
-0.01    Date/time
+0.01    2007/07/26
         First version, released on an unsuspecting world.
 

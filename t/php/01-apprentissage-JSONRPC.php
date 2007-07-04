@@ -11,7 +11,7 @@ require_once "jsonrpc.inc.php";
 
 $bonjourstruct =
   jsonrpc("/test/json_helloworld",
-          Array("nom" => "Quatravaux", "prenom" => "Dominique"));
+          Array("nom" => "Klein", "prenom" => "Jeremie"));
 
 print $bonjourstruct["salutation"];
 

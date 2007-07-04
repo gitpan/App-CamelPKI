@@ -11,7 +11,8 @@ To install this module type the following:
    ./Build test
    ./Build install
 
-
+On Ubuntu, packages can be necessary to install perl dependencies :
+- apache2-threaded-dev
 
 DEPENDENCIES
 This module requires these other modules and libraries:
@@ -41,19 +42,22 @@ This module requires these other modules and libraries:
 HOWTO CamelPKI Quick and Fast
 1. Installation of the required softwares :
 Some applications must be installed in order CamelPKI to work :
-I give between parenthesis the name of the package in Ubuntu. Under gentoo, fonctionnalities
+I give between parenthesis the name of the package in Ubuntu (add all default repository to sources.list). Under gentoo, fonctionnalities
 are controled by use flags that are generally well explained.
 - apache (apache2) : php5 (libapache2-mod-php5), perl(libapache2-mod-perl2)
-- php (php5-cli) : mod_perl, mod_json(php5-json), curl(php-curl)
+- php (php5-cli) : mod_json(php5-json), curl(php5-curl)
 - libssl0.9.8
 - libssl-dev
 - libnet-ssleay-perl
 - libdb4.3-dev
+- unzip
+- build-essential
 
 2. Installation of the Perl Modules :
 You have to install some perl modules from CPAN in order to make work the application.
 (steps required to install a module from CPAN ca be found on Google). (During my installations i found that 3 required modules form Crypt::OpenSSL::CA are not installed ... FIXME : find these modules)
-install Module::Build File::Slurp MIME::Base64 Error DateTime Sys::Hostname  IO::Socket::INET Catalyst Catalyst::Plugin::ConfigLoader Catalyst::Plugin::Static::Simple Catalyst::Action::RenderView Catalyst::Engine::Apache JSON Catalyst::View::JSON DBIx::Class SQL::Translator DBD::SQLite Crypt::X509 IPC::Run Test::Group Test::More Test::Builder File::Which File::Slurp File::Find Cwd Errno LWP::Simple LWP::UserAgent Convert::ASN1 IO::Socket::SSL Catalyst::View::TT HTTP::Request::Form Data::Dump Crypt::OpenSSL::CA
+In this step, CPAN has to be up-to-date (install Bundlle::CPAN and upgrade).
+install Module::Build File::Slurp MIME::Base64 Error DateTime Sys::Hostname DBD::SQLite DBIx::Class IO::Socket::INET Catalyst Catalyst::Plugin::ConfigLoader Catalyst::Plugin::Static::Simple Catalyst::Action::RenderView Catalyst::Engine::Apache JSON Catalyst::View::JSON SQL::Translator Crypt::X509 IPC::Run Test::Group Test::More Test::Builder File::Which File::Slurp File::Find Cwd Errno LWP::Simple LWP::UserAgent Convert::ASN1 IO::Socket::SSL Catalyst::View::TT HTTP::Request::Form Data::Dump Crypt::OpenSSL::CA
 
 3. Extract the App-CamelPKI archive and create your own app_camelpki.yml (a sample ca be found 'app_camelpki.yml.sample').
 
@@ -61,11 +65,13 @@ install Module::Build File::Slurp MIME::Base64 Error DateTime Sys::Hostname  IO:
 	Key ceremony is an important task to do. You have to generate your own
 	Certificates and Private Keys for the CA. A script has been développed in order
 	to do this easily :
+	$perl Build.PL
 	$./Build
 	$./script/camel_pki_keyceremony.pl var/
 	From this point, the CA Certificate's and keys can be found in the var/ directory.
 	And now the tests :
 	./Build test
+	TO pass php tests in Ubuntu you have to decomment the two lines in file t/php/php-json.ini. Under gentoo, you can comment them ;)
 
 4. Launch the server
 	Be sure, before this phase to complete your own config file (app_camlpki.yml)

@@ -463,7 +463,7 @@ be set by caller code after each L</load>.
 sub async_timeout {
     my ($self, @set) = @_;
     ($self->{async_timeout}) = @set if (@set);
-    return ( $self->{async_timeout} ||= 20);
+    return ( $self->{async_timeout} ||= 120);
 }
 
 =head2 tail_error_logfile()

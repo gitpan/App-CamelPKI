@@ -64,9 +64,9 @@ my $builder = My::Module::Build->new
         # 0.20 release comes with UTF-8 bugfixes :
        'Convert::ASN1'                     => 0.20,
        'IO::Socket::SSL'                   => 0, # App::CamelPKI::SysV::Apache
-       'Catalyst::View::TT'				   => 0,
-       'HTTP::Request::Form'			   => 0,
-       'Data::Dump'						   => 0,
+       'Catalyst::View::TT'		   => 0,
+       'HTTP::Request::Form'		   => 0,
+       'Data::Dump'			   => 0,
       },
     add_to_cleanup      => [ '*.gz', 'Build', 'META.yml' ],
     create_makefile_pl  => 'passthrough',

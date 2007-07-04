@@ -9,11 +9,11 @@ App::CamelPKI - A multi-purpose PKI.
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 =head1 SYNOPSIS
 
@@ -130,7 +130,7 @@ L<App::CamelPKI::Controller::Root>, L<Catalyst>
 =head1 AUTHOR
 
 Dominique QUATRAVAUX, C<< <domq at cpan.org> >>
-Jérémie KLEIN, C<<grm at cpan.org>>
+Jeremie KLEIN, C<<grm at cpan.org>>
 
 =head1 COPYRIGHT & LICENCE
 

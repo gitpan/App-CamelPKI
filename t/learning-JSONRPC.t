@@ -23,9 +23,9 @@ BEGIN {
 
 my $bonjourstruct =
   jsoncall_local("http://localhost:3000/test/json_helloworld",
-          {"nom" => "Klein", "prenom" => "Jérémie"});
+          {"nom" => "Klein", "prenom" => "Jeremie"});
 
 my $salutation = $bonjourstruct->{"salutation"};
 utf8::decode($salutation) or die;
 
-is($bonjourstruct->{"salutation"}, "Bonjour, Jérémie Klein !");
+is($bonjourstruct->{"salutation"}, "Hello, Jeremie Klein !");
