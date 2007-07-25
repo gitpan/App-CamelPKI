@@ -223,6 +223,10 @@ passing C<< -reason => "removeFromCRL" >> to L</revoke>.
 Search certificates without consideration for their revocation status.
 Used to cancel the effect of the implicit value mentioned above.
 
+=item I<< -serial => serial >>
+
+Search certificates for the certifiate serial.
+
 =item I<< $infokey => $infoval >>
 
 where $infokey doesn't start by a hyphen (-): returns only
@@ -277,6 +281,9 @@ sub search {
             $cursor = $cursor->search
                 ( { not_before => { "<=", $v->zulu },
                     not_after => { " >=", $v->zulu }} );
+        } elsif ($k eq "-serial") {
+        	$cursor = $cursor->search
+                ( { serial => { "=", $v } } );
         } elsif ($k eq "-revoked") {
             if (! defined($v)) {
                 # no-op

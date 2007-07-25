@@ -400,6 +400,58 @@ sub issue_crl {
                                            $opts{-signature_hash}));
 }
 
+=head2 get_certificates_issued()
+
+Builds a list of certificates already issued by the CA and not revoked.
+Certificates are returned as an array of L<App::CamelPKI::Certificate>.
+
+=cut
+
+sub get_certificates_issued(){
+	my ($self) = @_;
+	my @certs;
+
+    for(my $cursor = $self->{db}->search();        
+        $cursor->has_more; $cursor->next) {
+        	push @certs, $cursor->certificate;
+    }
+	return @certs;
+}
+
+=head2 get_certificates_revoked()
+
+Builds a list of certificates already issued by the CA and not revoked.
+Certificates are returned as an array of L<App::CamelPKI::Certificate>.
+
+=cut
+
+sub get_certificates_revoked(){
+	my ($self) = @_;
+	my @certs;
+
+    for(my $cursor = $self->{db}->search(-revoked => 1);        
+        $cursor->has_more; $cursor->next) {
+        	push @certs, $cursor->certificate;
+    }
+	return @certs;
+}
+
+=head2 get_certificate_by_serial($serial)
+
+Builds a list of certificates already issued by the CA and not revoked.
+Certificates are returned as an array of L<App::CamelPKI::Certificate>.
+
+=cut
+
+sub get_certificate_by_serial(){
+	my ($self, $serial) = @_;
+	
+    for(my $cursor = $self->{db}->search( -serial=>$serial, -revoked=>undef ); $cursor->has_more; $cursor->next) {
+        	warn "on est bon";
+        	return $cursor->certificate;
+    }
+}
+
 =head2 rescind()
 
 Cancels the ingoing transaction and let the object in an unusable
@@ -551,7 +603,7 @@ sub facet_operational {
     package App::CamelPKI::CA::FacetOperational;
     BEGIN { our @ISA = qw(App::CamelPKI::CA::FacetReadonly); }
 
-    use Class::Facet delegate => [qw(issue revoke commit issue_crl)];
+    use Class::Facet delegate => [qw(issue revoke commit issue_crl get_certificates_issued get_certificates_revoked get_certificate_by_serial)];
 }
 
 =begin internals

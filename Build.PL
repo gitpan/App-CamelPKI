@@ -30,11 +30,14 @@ my $builder = My::Module::Build->new
        'Catalyst::Plugin::Static::Simple'   => 0,
        'Catalyst::Action::RenderView'       => 0,
        'Catalyst::Engine::Apache'           => 0,
+       'Catalyst::View::TT'					=> 0,
        'JSON'                               => 1.07, # UTF-8 support needed
        'Catalyst::View::JSON'               => 0,
        'DBIx::Class'                        => 0.07,
        'SQL::Translator'                    => 0.07,
        'DBD::SQLite'                        => 0,
+       'Test::Group'						=> 0,
+       'Test::More'							=> 0,
 
        # The following modules won't probably last ad vitam within
        # App-CamelPKI:
@@ -64,9 +67,12 @@ my $builder = My::Module::Build->new
         # 0.20 release comes with UTF-8 bugfixes :
        'Convert::ASN1'                     => 0.20,
        'IO::Socket::SSL'                   => 0, # App::CamelPKI::SysV::Apache
-       'Catalyst::View::TT'		   => 0,
-       'HTTP::Request::Form'		   => 0,
-       'Data::Dump'			   => 0,
+       'Catalyst::View::TT'		   			=> 0,
+       'HTTP::Request::Form'		   		=> 0,
+       'HTML::TreeBuilder'					=> 0,
+       'HTTP::Request::Common'				=> 0,
+       'HTTP::Request'						=> 0,
+       'URI::URL'							=> 0,
       },
     add_to_cleanup      => [ '*.gz', 'Build', 'META.yml' ],
     create_makefile_pl  => 'passthrough',

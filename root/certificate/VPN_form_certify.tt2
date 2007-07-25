@@ -1,9 +1,9 @@
-[% META title = 'VPN Key Generation' -%]
+[% META title = 'VPN Certificate Generation' -%]
     
     <form method="post" action="/ca/template/vpn/certify/bundle.pem">
-		<input type="hidden" name="template" value="VPN1">
     <table>
-      <tr><td>DNS :</td><td><input type="text" name="dns"></td></tr>
+		<tr><td>DNS :</td><td><input type="text" name="dns"><input type="hidden" name="template" value="VPN1"></td></tr>
+      <tr><td colspan=2><input type="submit" name="Submit" value="Issue"></td></tr>
     </table>
-    <input type="submit" name="Submit" value="Submit">
+
     </form>

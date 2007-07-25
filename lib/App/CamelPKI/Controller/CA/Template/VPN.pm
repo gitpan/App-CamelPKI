@@ -35,4 +35,6 @@ sub _form_certify_template { "certificate/VPN_form_certify.tt2" }
 
 sub _form_revoke_template { "certificate/VPN_form_revoke.tt2" }
 
+sub _operations_available { "src/vpn/vpn_welcome.tt2" }
+
 1;

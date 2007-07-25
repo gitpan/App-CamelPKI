@@ -145,10 +145,10 @@ sub certifyJSON : Local : ActionClass("+App::CamelPKI::Action::JSON") {
 
 This function is used to redirect the user to the right template 
 depending on the url used to go to this functions, for example :
-http://127.0.0.1/ca/template/SSL/certifyForm will redirect
+http://127.0.0.1/ca/template/ssl/certifyForm will redirect
 on the appropriate form for SSL certificates.
 
-This supposes that every certificate's template own a function named
+This assumes that every certificate's template own a function named
 _form_certify_template that represents the url of the TT2 template
 starting from the App/CamelPKI/root directory.
 
@@ -206,10 +206,10 @@ sub certify : Local {
 
 This function is used to redirect the user to the right template 
 depending on the url used to go to this functions, for example :
-http://127.0.0.1/ca/template/SSL/form_certify_create wiil redirect
+http://127.0.0.1/ca/template/ssl/revokeForm will redirect
 on the appropriate form for SSL certificates.
 
-This supposes that every certificate's template own a function named
+This assumes that every certificate's template own a function named
 _form_template and that represents the url of the TT2 template
 starting from the App/CamelPKI/root directory.
 
@@ -241,18 +241,18 @@ sub revoke : Local {
     foreach my $shorttemplate ($self->_list_template_shortnames()) {
         my $template = "App::CamelPKI::CertTemplate::$shorttemplate";
         my @revocation_criteria =
-            map { ($type = $_) ?
+            map { ($type =~ m/$_/) ?
                       ($_ => $data) :
                           () } ($self->_revocation_keys);
         throw App::CamelPKI::Error::User
             ("Attempt revoke whole template group")
                 if ! @revocation_criteria;
+        warn @revocation_criteria;
         $ca->revoke($template, $_)
             for $ca->database->search
                 (template => $template, @revocation_criteria);
     }
     $ca->commit;
-    
     $c->stash->{type}=$type;
     $c->stash->{data}=$data;
     $c->stash->{template} = "certificate/revocation_done.tt2";
@@ -291,6 +291,17 @@ sub revokeJSON : Local :  ActionClass("+App::CamelPKI::Action::JSON") {
                 (template => $template, @revocation_criteria);
     }
     $ca->commit;
+}
+
+=head2 view_operations 
+
+returns to the right view for listing possiblities with templates.
+
+=cut
+
+sub view_operations : Local {
+	my ($self, $c) = @_;
+	$c->stash->{template} = $self->_operations_available;
 }
 
 =head1 OVERLOADABLE METHODS

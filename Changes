@@ -1,5 +1,18 @@
 Revision history for Camel-PKI
 
+0.03	2007/08/25
+		Integration of errors in the web interface
+		Tests added to test revocation through Forms (SSL and VPN)
+		Tests added for crl
+		Page to consult a certificate's information based on its serial
+		Configuration file enables configuration of the dns name of the webserver
+		Correction of a bug in revocation using forms
+		Page to display revoked certificates (in a human-readable style)
+		Page to display valid and issued certificates added (in a human-readable style)
+		Welcome page added
+		Functionnalities to view/download CRL added
+		Pages to issue/revoke certificates added
+
 0.02	2007/08/04
 		Correction of bugs to pass tests.
 

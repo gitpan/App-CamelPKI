@@ -43,7 +43,7 @@ L<App::CamelPKI::CertTemplate::VPN/certify>.
 my ($certCA, $keyCA) = App::CamelPKI->model("CA")->make_admin_credentials;
 
 my $response = formcall_remote
-   	("https://localhost:$port/ca/template/vpn/certifyForm", $reqVPN,
+   	("https://localhost:$port/ca/template/vpn/certifyForm", $reqVPN,  "Submit",
    	 -certificate => $certCA, -key => $keyCA);
     
 like($response, qr/-----BEGIN CERTIFICATE-----/, "Certificate is in the answer (VPN)");

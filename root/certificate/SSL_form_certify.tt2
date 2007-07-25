@@ -1,4 +1,4 @@
-[% META title = 'SSL Key Generation' -%]
+[% META title = 'SSL Certificate Generation' -%]
     
     <form method="post" action="/ca/template/ssl/certify/bundle.pem">
     <table>
@@ -11,6 +11,7 @@
       </td></tr>
       <tr><td>role :</td><td><input type="text" name="role"></td></tr>
       <tr><td>DNS :</td><td><input type="text" name="dns"></td></tr>
+	  <tr><td colspan=2><input type="submit" name="Submit" value="Issue"></td></tr>
     </table>
-    <input type="submit" name="Submit" value="Submit">
+
     </form>

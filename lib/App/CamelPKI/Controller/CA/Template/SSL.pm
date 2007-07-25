@@ -59,4 +59,6 @@ sub _form_certify_template { "certificate/SSL_form_certify.tt2" }
 
 sub _form_revoke_template { "certificate/SSL_form_revoke.tt2" }
 
+sub _operations_available { "src/ssl/ssl_welcome.tt2" }
+
 1;

@@ -63,7 +63,7 @@ colloquially known as "admin.p12".
 sub prepare_certificate {
     my ($class, $cacert, $cert, %opts) = @_;
     $class->copy_from_ca_cert($cacert, $cert);
-
+    
     $class->fillCommon($cacert, $cert);
     $class->fill_subject_DN
         ($cert,

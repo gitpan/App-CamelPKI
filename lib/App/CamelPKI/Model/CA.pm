@@ -189,10 +189,11 @@ sub do_ceremony {
     $ca->set_keys (-certificate => $CA1, -key =>  $privKeyCA1);
 
     my $webserverkey = App::CamelPKI::PrivateKey->genrsa($self->{keysize});
+    my $web_dns = exists($self->{dns_webserver}) ? 
+    	 $self->{dns_webserver} : "undef";
     $ca->issue
         ("App::CamelPKI::CertTemplate::PKI1", $webserverkey->get_public_key,
-         dns => Sys::Hostname::hostname());
-    #TODO : on met une possibilité de configuration ?
+         dns => $web_dns);
     my ($webservercert) = $ca->commit;
     $webserver->set_keys
         (-certificate => $webservercert,

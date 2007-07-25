@@ -84,7 +84,7 @@ BEGIN {
            run_php run_php_script
            http_request_prepare http_request_execute
            plaintextcall_remote
-           formcall_remote formreq_remote
+           call_remote formcall_remote formreq_remote
            jsoncall_local jsonreq_remote jsoncall_remote);
     our @EXPORT_OK = (@EXPORT,
                       qw(test_simple_utf8 test_bmp_utf8
@@ -241,8 +241,33 @@ sub jsoncall_remote {
     die $content;
 }
 
+=item I<call_remote($url)>
+
+Gets $url and return the result.
+
+=cut
+
+sub call_remote {
+	my ($url, @args) = @_;
+	my $ua = LWP::UserAgent->new;
+	my $req = http_request_prepare($url, @args);
+    my $res = http_request_execute($req, @args);
+ 	
+ 	my $content = $res->content;
+ 	die sprintf("call_remote: failed with code %d\n%s\n",
+                $res->code, $content) if ! $res->is_success;
+    return $content if defined $content;
+    die $content;
+ 	
+}
+
+=item I<formreq_remote($url $struct, $button, @args)>
+
+Call a form and fill it based on $struct, then push on $button
+
+=cut
 sub formreq_remote {
-    my ($url, $structure, @args) = @_;
+    my ($url, $structure, $button, @args) = @_;
     
 	my $ua = LWP::UserAgent->new;
 	my $req = http_request_prepare($url, @args);
@@ -258,7 +283,7 @@ sub formreq_remote {
     foreach my $part (keys(%$structure)){
     	$f->field($part, $structure->{$part});
     }
-    my $response = http_request_execute($f->press("Submit"), @args);
+    my $response = http_request_execute($f->press($button), @args);
     return $response;
 }
 
@@ -273,7 +298,7 @@ throws an exception if the HTTP request isn't a success .
 sub formcall_remote {
     my $response = formreq_remote(@_);
     my $content = $response->content;
-    die sprintf("jsoncall_remote: failed with code %d\n%s\n",
+    die sprintf("formcall_remote: failed with code %d\n%s\n",
                 $response->code, $content) if ! $response->is_success;
     return $content if defined $content;
     die $content;

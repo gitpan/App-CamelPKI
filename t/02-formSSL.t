@@ -51,7 +51,7 @@ L<App::CamelPKI::CertTemplate::SSL/certify>.
 my ($CAcert, $CAkey) = App::CamelPKI->model("CA")->make_admin_credentials;
 
 my $response1 = formcall_remote
-   	("https://localhost:$port/ca/template/ssl/certifyForm", $reqSSLServer,
+   	("https://localhost:$port/ca/template/ssl/certifyForm", $reqSSLServer, "Submit",
    	 -certificate => $CAcert, -key => $CAkey);
 like($response1, qr/-----BEGIN CERTIFICATE-----/, "Certificate is in response (SSLServer)");
 like($response1, qr/-----BEGIN RSA PRIVATE KEY-----/, "Private key is in the response (SSLServer)");
@@ -70,7 +70,7 @@ is ($certificate->get_public_key->get_modulus, $PrivateKey->get_modulus, "Certif
 
 
 my $response2 = formcall_remote
-   	("https://localhost:$port/ca/template/ssl/certifyForm", $reqSSLClient,
+   	("https://localhost:$port/ca/template/ssl/certifyForm", $reqSSLClient,  "Submit",
    	 -certificate => $CAcert, -key => $CAkey);
    	 
 like($response2, qr/-----BEGIN CERTIFICATE-----/, "Certificate is in the answer (SSLCLient)");

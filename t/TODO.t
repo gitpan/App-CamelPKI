@@ -23,7 +23,7 @@ BEGIN {
     use_ok 'Cwd';
 }
 
-test "TODO" => sub {
+test "still some work" => sub {
 	testStringPresent("todo");
 };
 

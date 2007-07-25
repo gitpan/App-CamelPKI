@@ -29,10 +29,8 @@ The page served for unkowns URIs.
 
 sub default : Private {
     my ( $self, $c ) = @_;
-
-    # Hello World
     $c->response->status(404);
-    $c->response->body( $c->welcome_message );
+	$c->stash->{template} = "welcome.tt2";
 }
 
 =item I<end>
@@ -62,8 +60,18 @@ sub end : ActionClass('RenderView') {
             } (map { split m/\n/ } @{$c->error});
             $c->response->body(join("\n", @folded_errors));
             $c->clear_errors;
+        } elsif ($c->error->[0]
+                       ->isa("App::CamelPKI::Error::Privilege")) {
+        	$c->stash->{message} = "Insufficient privilege to execute this operation. Please contact the administrator if you think you should.";
+        	$c->stash->{template} = 'message.tt2';                     	
+        } else {
+        	#Not known errors
+        	$c->stash->{error} = $c->error->[0];
+        	$c->stash->{template} = 'error.tt2';
         }
+        $c->clear_errors;
     }
+    
 }
 
 =back

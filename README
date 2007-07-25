@@ -1,4 +1,4 @@
-App/CamelPKI version 0.01
+App/CamelPKI version 0.02
 ========================
     
 
@@ -59,7 +59,7 @@ You have to install some perl modules from CPAN in order to make work the applic
 In this step, CPAN has to be up-to-date (install Bundlle::CPAN and upgrade).
 install Module::Build File::Slurp MIME::Base64 Error DateTime Sys::Hostname DBD::SQLite DBIx::Class IO::Socket::INET Catalyst Catalyst::Plugin::ConfigLoader Catalyst::Plugin::Static::Simple Catalyst::Action::RenderView Catalyst::Engine::Apache JSON Catalyst::View::JSON SQL::Translator Crypt::X509 IPC::Run Test::Group Test::More Test::Builder File::Which File::Slurp File::Find Cwd Errno LWP::Simple LWP::UserAgent Convert::ASN1 IO::Socket::SSL Catalyst::View::TT HTTP::Request::Form Data::Dump Crypt::OpenSSL::CA
 
-3. Extract the App-CamelPKI archive and create your own app_camelpki.yml (a sample ca be found 'app_camelpki.yml.sample').
+3. Extract the App-CamelPKI archive and create your own app_camelpki.yml (a sample can be found 'app_camelpki.yml.sample').
 
 3. Key Ceremony - Preparing the application
 	Key ceremony is an important task to do. You have to generate your own
@@ -67,14 +67,14 @@ install Module::Build File::Slurp MIME::Base64 Error DateTime Sys::Hostname DBD:
 	to do this easily :
 	$perl Build.PL
 	$./Build
-	$./script/camel_pki_keyceremony.pl var/
-	From this point, the CA Certificate's and keys can be found in the var/ directory.
+	$./script/camel_pki_keyceremony.pl var/ # Where the CA keys should be put.
+	From this point, the CA Certificate's and key's can be found in the var/ directory.
 	And now the tests :
-	./Build test
-	TO pass php tests in Ubuntu you have to decomment the two lines in file t/php/php-json.ini. Under gentoo, you can comment them ;)
+	$./Build test
+	To pass php tests in Ubuntu you have to decomment the two lines in file t/php/php-json.ini. Under gentoo, you can comment them ;)
 
 4. Launch the server
-	Be sure, before this phase to complete your own config file (app_camlpki.yml)
+	Be sure, before this phase to complete your own config file ('app_camelpki.yml')
 	If you have apache and mod_perl installed, you could launch the server with apache
 	$./script/start_stop_camel_pki.pl start (stop in order to stop it)
 
@@ -82,7 +82,7 @@ install Module::Build File::Slurp MIME::Base64 Error DateTime Sys::Hostname DBD:
 	$./script/camel_pki_server.pl
 	
 5.Generate Client's certificate in order to have permission to generate and issue
-	new client's certificates (we suppose key and certificates are contained in var/)
+	new client's certificates (we suppose key and certificates are contained in 'var/')
 	For this operation we will use openssl :
 
 	$ cat var/admin.key var/admin.pem >	admin.glob
@@ -91,6 +91,15 @@ install Module::Build File::Slurp MIME::Base64 Error DateTime Sys::Hostname DBD:
 	From this point, the file cert.p12 is a certificate in pkcs12 format.
 	It can be handled by your browser to authenticate on the PKI.
 
+6.Enjoy the ride
+	Simples pages are delivered.
+	You can see them and generate certificates for SSL and VPN.
+	With a form :
+		https://ip:port/ca/template/ssl/certifyForm
+	or
+		https://ip:port/ca/template/vpn/certifyForm
+	You can use the same kind of url with JSON parameters.
+		https://ip:port/ca/template/ssl/certifyJSON for example.(see in t/ and t/php/ for sample).
 
 TESTED PLATFORMS
 This package has been test under Ubuntu Edgy and Gentoo (2006.1 and 2007.0 as these
@@ -99,7 +108,8 @@ lines are written.
 
 SAMPLES
 
-Please, consult t/php/README for php code samples
+Please, consult t/php/README for php code samples.
+
  
 
 COPYRIGHT AND LICENCE

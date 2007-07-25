@@ -1,16 +1,32 @@
 package App::CamelPKI::View::TT;
 
 use strict;
-use warnings;
 use base 'Catalyst::View::TT';
+
+__PACKAGE__->config({
+    CATALYST_VAR => 'Catalyst',
+    INCLUDE_PATH => [
+        App::CamelPKI->path_to( 'root', 'src' ),
+        App::CamelPKI->path_to( 'root', 'lib' ),
+        App::CamelPKI->path_to( 'root' )
+    ],
+    PRE_PROCESS  => 'config/main',
+    WRAPPER      => 'site/wrapper',
+    ERROR        => 'error.tt2',
+    TIMER        => 0,
+});
 
 =head1 NAME
 
-App::CamelPKI::View::TT - Catalyst View
+App::CamelPKI::View::TT - Catalyst TTSite View
+
+=head1 SYNOPSIS
+
+See L<App::CamelPKI>
 
 =head1 DESCRIPTION
 
-Catalyst View.
+Catalyst TTSite View.
 
 =head1 AUTHOR
 
@@ -24,3 +40,4 @@ it under the same terms as Perl itself.
 =cut
 
 1;
+

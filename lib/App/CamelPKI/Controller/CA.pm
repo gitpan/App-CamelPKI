@@ -86,6 +86,73 @@ sub current_crl : Local {
     $c->forward("gen_crl"); # FIXME: implement caching.
 }
 
+=item I<examine_crl>
+
+Sends the right template in order to consult the CRL.
+
+=cut
+
+sub examine_crl : Local {
+	my ($self, $c) = @_;
+	$c->stash->{crl} = $c->model("CA")->instance->issue_crl->serialize;
+	$c->stash->{template} = "crl/consult.tt2";
+}
+
+=item I<download_crl>
+
+Sends back in a text file in DER format the CRL.
+
+=cut
+
+sub download_crl : Local{
+	my ($self, $c) = @_;
+	$c->response->content_type("application/octet-stream");
+    $c->response->body($c->model("CA")->instance->issue_crl->serialize);
+}
+
+=item I<list_issued_certificates>
+
+Gets the list of Certificates wich are currently issued and not revoked yet.
+
+=cut
+
+sub list_issued_certificates : Local{
+	my ($self, $c) = @_;
+	my @certs = $c->model("CA")->instance->get_certificates_issued;
+	foreach my $myCert (@certs){
+		push @{$c->stash->{certs}},
+			{
+				serial => $myCert->get_serial,
+				subject => $myCert->get_subject_DN->to_string,
+				notBefore => $myCert->get_notBefore,
+				notAfter => $myCert->get_notAfter,
+			};
+	}
+	$c->stash->{template} = "certificate/list_issued.tt2";
+}
+
+=item I<list_revoked_certificates>
+
+Gets the list of Certificates wich are currently revoked.
+
+=cut
+
+sub list_revoked_certificates : Local{
+	my ($self, $c) = @_;
+	my @certs = $c->model("CA")->instance->get_certificates_revoked;
+	foreach my $myCert (@certs){
+		push @{$c->stash->{certs}},
+			{
+				serial => $myCert->get_serial,
+				subject => $myCert->get_subject_DN->to_string,
+				notBefore => $myCert->get_notBefore,
+				notAfter => $myCert->get_notAfter,
+				public_key => $myCert->get_public_key->serialize,
+			};
+	}
+	$c->stash->{template} = "certificate/list_revoked.tt2";
+}
+
 =back
 
 =cut
