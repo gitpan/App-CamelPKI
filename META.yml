@@ -1,6 +1,6 @@
 ---
 name: App-CamelPKI
-version: 0.03
+version: 0.04
 author:
   - 'Jérémie Klein <grm.klein@gmail.com>'
 abstract: A multi-purpose PKI.
@@ -64,7 +64,7 @@ build_requires:
 provides:
   App::CamelPKI:
     file: lib/App/CamelPKI.pm
-    version: 0.03
+    version: 0.04
   App::CamelPKI::Action::JSON:
     file: lib/App/CamelPKI/Action/JSON.pm
   App::CamelPKI::CA:

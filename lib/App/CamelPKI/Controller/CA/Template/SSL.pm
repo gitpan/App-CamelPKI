@@ -31,28 +31,6 @@ deals with.
 
 sub _list_template_shortnames { qw(SSLServer SSLClient) }
 
-=head2 revoke($revocdetails)
-
-Revokes a set of SSL certificates at once. The $revocdetails structure
-is of either of the following forms:
-
-    {
-        dns => $host
-    }
-
-or
-
-    {
-        role => $role
-    }
-
-
-The effect is to revoke all certificates that have $host as their DNS
-name (respectively $role as their role) in any of the B<SSLServer> and
-B<SSLClient> templates.
-
-=cut
-
 sub _revocation_keys { ("dns", "role") }
 
 sub _form_certify_template { "certificate/SSL_form_certify.tt2" }

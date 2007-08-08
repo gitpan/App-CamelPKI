@@ -1,5 +1,3 @@
-App-CamelPKI-0.02.tar.gz
-App-CamelPKI-0.03.tar.gz
 app_camelpki.yml.sample
 AUTHORS
 Build.PL
@@ -43,7 +41,6 @@ lib/Class/Facet.pm
 LICENCE
 Makefile.PL
 MANIFEST			This list of files
-META.yml
 nuts_pki.yml.sample
 README
 root/certificate/info.tt2
@@ -121,3 +118,4 @@ t/php/php-json.ini
 t/php/README
 t/TODO.t
 t/view_TT.t
+META.yml

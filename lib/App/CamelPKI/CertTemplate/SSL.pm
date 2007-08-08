@@ -72,7 +72,7 @@ sub prepare_certificate {
     $class->fill_subject_DN($cert,
                             OU => "SSL", OU => "Client", CN => $role);
 
-    $cert->set_extension("keyUsage", "keyEncipherment, keyAgreement");
+    $cert->set_extension("keyUsage", "keyEncipherment, keyAgreement, digitalSignature");
     $cert->set_extension("extendedKeyUsage", "clientAuth");
 }
 

@@ -1,6 +1,10 @@
 Revision history for Camel-PKI
 
-0.03	2007/08/25
+0.04	2007/08/08
+		Modification of view to consult revoked certificates
+		Correction of a bug in SSLClient (to authenticate to server)
+
+0.03	2007/07/25
 		Integration of errors in the web interface
 		Tests added to test revocation through Forms (SSL and VPN)
 		Tests added for crl
@@ -13,9 +17,9 @@ Revision history for Camel-PKI
 		Functionnalities to view/download CRL added
 		Pages to issue/revoke certificates added
 
-0.02	2007/08/04
+0.02	2007/07/04
 		Correction of bugs to pass tests.
 
-0.01    2007/07/26
+0.01    2007/06/26
         First version, released on an unsuspecting world.
 

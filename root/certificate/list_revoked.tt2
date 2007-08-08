@@ -1,6 +1,6 @@
 [% META title = 'Certificates revoked' -%]
 
-<p>Here is a list of certificates wich are currently valid :</p>
+<p>Here is a list of certificates wich are currently revoked :</p>
 <table>
 <tr>
 	<th>Serial</th>
