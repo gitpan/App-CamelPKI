@@ -2,8 +2,15 @@
 
 use strict;
 use warnings;
+use Test::More;
 
-use Test::More no_plan => 1;
+if ($ENV{DEV}) {
+	plan tests => 4;
+} else {
+	plan skip_all => "Test for coders :)";
+};
+	
+
 
 =head1 NAME
 
@@ -13,15 +20,16 @@ A problem in this test won't say the application won't run.
 
 
 =cut
-BEGIN {
-    use_ok 'Catalyst::Test', 'App::CamelPKI';
-    use_ok 'Test::Group';
-    use_ok 'Catalyst::Utils';
-    use_ok 'File::Slurp';
-    use_ok 'File::Find';
-    use_ok 'File::Spec';
-    use_ok 'Cwd';
-}
+
+use Catalyst::Test;
+use App::CamelPKI;
+use Test::Group;
+use Catalyst::Utils;
+use File::Slurp;
+use File::Find;
+use File::Spec;
+use Cwd;
+
 
 test "still some work" => sub {
 	testStringPresent("todo");

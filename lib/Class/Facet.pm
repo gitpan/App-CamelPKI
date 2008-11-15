@@ -304,6 +304,17 @@ therefore free to add their own fields into the facet object.
 
 sub make {
     my ($class, $facetclass, $origobject) = @_;
+    
+#	use Class::ISA;
+#	use UNIVERSAL::can; 
+	#Making a facet from a facet is forbidden !!!!
+#	for my $int (Class::ISA::super_path($facetclass)) {
+# 		eval {($int->can("from") && $int->can("delegate"))};
+# 		throw App::CamelPKI::Error::User
+# 			("Subclassing a facet is forbidden")
+# 				if ($int->can("from") && $int->can("delegate"))';
+#	}
+	
     return bless { delegate => $origobject }, $facetclass;
 }
 
@@ -487,7 +498,7 @@ __END__
 
 =cut
 
-use Test::More no_plan => 1;
+use Test::More qw(no_plan);
 use Test::Group;
 
 test "import" => sub {
@@ -608,16 +619,21 @@ test "on_error and faceted-out methods" => sub {
     like($@, qr/^forbidden method set_this/);
 };
 
-test "TODO: make defensiveness" => sub {
+TODO:{
+	local $TODO = "Defensiveness not implemented";
+test "make defensiveness" => sub {
     @Bogus::SubFacet::ISA = qw(Foo::ReadOnlyFacet);
     my $object = Foo::TheRealOne->new;
+
     eval {
         Class::Facet->make("Bogus::SubFacet", $object);
         fail("subclassing a facet is a no-no");
     };
+
     @Foo::SubReal::ISA = qw(Foo::TheRealOne);
     Class::Facet->make("Foo::ReadOnlyFacet", Foo::SubReal->new);
     pass("->make works for subclasses too");
+};
 };
 
 =end internals

@@ -85,7 +85,8 @@ BEGIN {
            http_request_prepare http_request_execute
            plaintextcall_remote
            call_remote formcall_remote formreq_remote
-           jsoncall_local jsonreq_remote jsoncall_remote);
+           jsoncall_local jsonreq_remote jsoncall_remote
+           is_php_cli_present);
     our @EXPORT_OK = (@EXPORT,
                       qw(test_simple_utf8 test_bmp_utf8
                          @test_DN_CAs
@@ -169,17 +170,17 @@ sub jsoncall_local {
         $req->method("POST");
         ## FIXME: presumably passing the POST payload was supposed to
         ## be done like this,
-        # $req->add_content(scalar(JSON::objToJson($struct)));
+        # $req->add_content(scalar(JSON::to_json($struct)));
         ## but that doesn't work... so we use a global variable instead!
         ## (see L<App::CamelPKI::Action::JSON>):
         $App::CamelPKI::Action::JSON::request_body_for_tests =
-            JSON::objToJson($struct);
+            JSON::to_json($struct);
     }
     my $response = Catalyst::Test::local_request("App::CamelPKI", $req);
     die sprintf("plain request at $url failed with code %d\n%s\n",
                 $response->code, $response->content)
         unless $response->is_success;
-    my $retval = eval { JSON::jsonToObj($response->content) };
+    my $retval = eval { JSON::from_json($response->content) };
     return $retval if defined $retval;
     die $response;
 }
@@ -217,7 +218,7 @@ sub jsonreq_remote {
     my $req = http_request_prepare($url, @args);
     $req->method("POST");
     $req->header("Content-Type" => "application/json");
-    $req->content(scalar(JSON::objToJson($structure)));
+    $req->content(scalar(JSON::to_json($structure)));
     $req->header("Accept" => "application/json");
     return http_request_execute($req, @args);
 }
@@ -236,7 +237,7 @@ sub jsoncall_remote {
     my $content = $response->content;
     die sprintf("jsoncall_remote: failed with code %d\n%s\n",
                 $response->code, $content) if ! $response->is_success;
-    my $retval = eval { JSON::jsonToObj($content) };
+    my $retval = eval { JSON::from_json($content) };
     return $retval if defined $retval;
     die $content;
 }
@@ -1013,6 +1014,25 @@ CONF_DEFINES
     return;
 }
 
+=item I<is_php_cli_present()>
+
+Returns true if the php executable (php-cli) is found on the system using File::Which.
+It searches for exectables named "php" or "php5".
+
+=cut
+
+sub is_php_cli_present(){
+	my ($php) = (File::Which::which("php"), File::Which::which("php5"));
+	if ($php){
+		my @mods = `$php -m`;
+		foreach(@mods){
+			$_ =~ s/\n//g;
+			return 1 if $_ =~ /curl/;
+		}
+	}
+	return 0;
+}
+
 =item I<run_php($script)>
 
 =item I<run_php_script($path)>
@@ -1709,7 +1729,7 @@ __END__
 
 =cut
 
-use Test::More no_plan => 1;
+use Test::More qw(no_plan);
 use Test::Group;
 use App::CamelPKI::Test;
 use File::Spec::Functions qw(catfile catdir);
@@ -1754,7 +1774,7 @@ SCRIPT_OK
     my $tempdir = My::Tests::Below->tempdir;
 
     $out = run_perl(<<"SCRIPT_WRAPPER");
-use Test::More no_plan => 1;
+use Test::More qw(no_plan);
 use App::CamelPKI::Test qw(run_perl_ok);
 
 run_perl_ok <<'SCRIPT_OK';
@@ -1806,7 +1826,7 @@ OK_CERT
     my $out = run_perl(<<"SCRIPT");
 use strict;
 use warnings;
-use Test::More no_plan => 1;
+use Test::More qw(no_plan);
 use App::CamelPKI::Test qw(certificate_looks_ok);
 
 my \$certificate = <<'OK_CERT';
@@ -1943,7 +1963,7 @@ test "certificate_chain_ok and test certificates" => sub {
         map { My::Tests::Below->pod_code_snippet($_) }
             (qw(certificate_chain_ok certificate_chain_notok));
     my $out = run_perl(<<"SCRIPT");
-use Test::More no_plan => 1;
+use Test::More qw(no_plan);
 use App::CamelPKI::Test qw(certificate_chain_ok
        %test_rootca_certs %test_self_signed_certs %test_entity_certs);
 foreach my \$key (qw(${\join(" ", @keyids)})) {
@@ -1988,14 +2008,25 @@ sub server_can_connect {
     return ($response->is_success);
 }
 
-test "server_start and server_stop" => sub {
-    server_start();
-    ok(server_can_connect());
+SKIP: {
+	use App::CamelPKI; 
+	my $webserver = App::CamelPKI->model("WebServer")->apache;
+	
+	skip "Apache is not installed or Key Ceremony has not been done", 
+		1 unless ($webserver->is_installed_and_has_perl_support && $webserver->is_operational);
+	
+	test "server_start and server_stop" => sub {
+    	server_start();
+    	ok(server_can_connect());
 
-    server_stop();
-    ok(! server_can_connect());
+    	server_stop();
+    	ok(! server_can_connect());
+	};
 };
 
+SKIP:{
+	skip "php-cli not installed",1
+		unless is_php_cli_present();
 test "run_php" => sub {
     my $phpout = run_php(<<"SCRIPT");
 <?php
@@ -2004,13 +2035,23 @@ print "z" . "o" . "i" . "n" . "x";
 
 ?>
 SCRIPT
-
-    like($phpout, qr/zoinx/);
+	
+    	like($phpout, qr/zoinx/);
+	};
 };
 
-use App::CamelPKI::Test qw(camel_pki_chain);
-test "camel_pki_chain" => sub {
-    my @chain = camel_pki_chain;
-    is(scalar(@chain), 2);
-    certificate_chain_ok($chain[0], \@chain);
-};
+SKIP: {
+	use App::CamelPKI; 
+	my $webserver = App::CamelPKI->model("WebServer")->apache;
+	
+	skip "Key Ceremony has not been done", 
+		1 unless ($webserver->is_operational);
+	
+	
+	use App::CamelPKI::Test qw(camel_pki_chain);
+	test "camel_pki_chain" => sub {
+    	my @chain = camel_pki_chain;
+    	is(scalar(@chain), 2);
+    	certificate_chain_ok($chain[0], \@chain);
+	};
+}

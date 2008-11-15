@@ -102,7 +102,7 @@ MESSAGE
          $c->request->content_type eq "application/json") {
          my $jsoninput = $self->_request_body($c);
          local $JSON::UTF8 = 1;
-         push @jsoninput, scalar(JSON::jsonToObj($jsoninput));
+         push @jsoninput, scalar(JSON::from_json($jsoninput));
      }
 
      $self->NEXT::execute( @_ , @jsoninput );

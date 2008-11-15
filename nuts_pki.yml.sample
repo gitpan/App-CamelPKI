@@ -1,6 +1,0 @@
----
-Model::CA:
-  db_dir: /home/dom/Flash/Camel-PKI/var/CA
-  keysize: 2048
-Model::WebServer:
-  home_dir: /home/dom/Flash/Camel-PKI/var/webserver

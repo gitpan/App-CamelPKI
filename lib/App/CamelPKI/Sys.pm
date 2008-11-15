@@ -43,7 +43,7 @@ sub fork_and_do (&) {
 
     # In child process only:
     eval 'END { POSIX::_exit($?) }';
-    eval { $sub->(); exit(0) };
+    eval { $sub->();  exit(0) };
     warn $@; exit(1);
 }
 
@@ -51,7 +51,7 @@ require My::Tests::Below unless caller;
 
 __END__
 
-use Test::More no_plan => 1;
+use Test::More qw(no_plan);
 use Test::Group;
 
 use App::CamelPKI::Sys qw(fork_and_do);

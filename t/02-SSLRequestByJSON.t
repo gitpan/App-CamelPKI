@@ -3,22 +3,31 @@
 use strict;
 use warnings;
 
-use Test::More no_plan => 1;
+use Test::More;
+use Test::Group;
+
+my $webserver = App::CamelPKI->model("WebServer")->apache;
+
+if ($webserver->is_operational) {
+	plan tests => 2;
+} else {
+	plan skip_all => "Key ceremony has not be done !";
+}
 
 =head1 NAME
 
+02-SSLRequestByJSON.t : Test for issuing SSL certificates using JSON.
 
 =cut
-BEGIN {
-    use_ok 'Catalyst::Test', 'App::CamelPKI';
-    use_ok 'Test::Group';
-    use_ok 'Catalyst::Utils';
-    use_ok 'JSON';
-    use_ok 'Crypt::OpenSSL::CA';
-    use_ok 'App::CamelPKI::Test';
-    use_ok 'App::CamelPKI::Test', 'camel_pki_chain';
-    use_ok 'App::CamelPKI::Certificate';
-}
+use Catalyst::Test;
+use App::CamelPKI;
+use Catalyst::Utils;
+use JSON;
+use Crypt::OpenSSL::CA;
+use App::CamelPKI::Test;
+use App::CamelPKI::Test qw(camel_pki_chain);
+use App::CamelPKI::Certificate;
+
 
 test "Unique demand" => sub {
  	my $role = "test";
@@ -62,6 +71,6 @@ test "three certificates (SSLServer et SSLClient)" => sub {
 	
 	foreach my $keyandcert (@{$res->{keys}}) {
         my $cert = $keyandcert->[0];
-    	certificate_chain_ok($cert, [ camel_pki_chain ]);
+    	certificate_chain_ok($cert, [ &camel_pki_chain ]);
     }
 }

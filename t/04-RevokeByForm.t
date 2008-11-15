@@ -5,21 +5,29 @@ use warnings;
 
 =head1 NAME
 
-03-forRevoke.t : pass tests for revoking certificates using forms.
+04-RevokeByForm.t : pass tests for revoking certificates using forms.
 
 =cut
 
-use Test::More no_plan => 1;
-
-BEGIN {
-    use_ok 'Catalyst::Test', 'App::CamelPKI';
-    use_ok 'Test::Group';
-    use_ok 'Catalyst::Utils';
-    use_ok 'App::CamelPKI::CRL';
-    use_ok 'App::CamelPKI::Test';
-}
+use Test::More;
+use Test::Group;
 
 my $webserver = App::CamelPKI->model("WebServer")->apache;
+
+
+if ($webserver->is_installed_and_has_perl_support && $webserver->is_operational) {
+	plan tests => 3;
+} else {
+	plan skip_all => "Apache is not insalled or Key Ceremnoy has not been done !";
+}
+
+
+use Catalyst::Test;
+use Catalyst::Utils;
+use App::CamelPKI::CRL;
+use App::CamelPKI;
+use App::CamelPKI::Test;
+
 $webserver->start(); END { $webserver->stop(); }
 $webserver->tail_error_logfile();
 
@@ -65,33 +73,33 @@ test "Revocation SSLServer" => sub {
 	
 	my $certSSL = certify("ssl", "SSLServer", "dns", "test.foo.com");
 	
-	ok(! cert_is_revoked($certSSL));
+	ok(! cert_is_revoked($certSSL), "Certificate not inserted ?");
 	
 	revoke("ssl", "dns", "test.foo.com");
 
-	ok(cert_is_revoked($certSSL));
+	ok(cert_is_revoked($certSSL), "Certificate not revoked !");
 };
 
 test "Revocation SSLClient" => sub {
 	
 	my $certSSL = certify("ssl", "SSLClient", "role", "test.bar");
 	
-	ok(! cert_is_revoked($certSSL));
+	ok(! cert_is_revoked($certSSL), "Certificate not inserted ?");
 	
 	revoke("ssl", "role", "test.bar");
 
-	ok(cert_is_revoked($certSSL));
+	ok(cert_is_revoked($certSSL), "Certificate not revoked !");
 };
 
 test "Revocation VPN" => sub {
 	
 	my $cert = certify("vpn", "VPN", "dns", "test.foo.com");
 	
-	ok(! cert_is_revoked($cert));
+	ok(! cert_is_revoked($cert), "Certificate not inserted ?");
 	
 	revoke("vpn", "dns", "test.foo.com");
 
-	ok(cert_is_revoked($cert));
+	ok(cert_is_revoked($cert), "Certificate not revoked !");
 };
 
 =head2 certify($type_cert, $template, $type, $data)
@@ -116,8 +124,9 @@ sub certify {
 	my $resp_server = formcall_remote
    		("https://localhost:$port/ca/template/$type_cert/certifyForm", $req, "Submit",
    	 		-certificate => $CAcert, -key => $CAkey);
+   
    	return App::CamelPKI::Certificate->parse($resp_server);
-}
+};
 
 =head2 revoke($type_cert, $type, $data)
 
@@ -147,4 +156,4 @@ sub cert_is_revoked {
         (plaintextcall_remote("https://localhost:$port/ca/current_crl"));
         
     return $crl->is_member(shift);
-}
+};

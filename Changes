@@ -1,5 +1,11 @@
 Revision history for Camel-PKI
 
+0.05	2008/*/*
+		Refactoring of tests
+		Correction of function using json due to deprecation of the old-ones
+		Adding detection of environment in order to run tests ... or not :)
+		App::Info::HTTPD::Apache is used to test if apach is installed
+
 0.04	2007/08/08
 		Modification of view to consult revoked certificates
 		Correction of a bug in SSLClient (to authenticate to server)

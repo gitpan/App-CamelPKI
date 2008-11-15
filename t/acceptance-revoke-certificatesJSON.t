@@ -17,7 +17,7 @@ once.
 
 =cut
 
-use Test::More no_plan => 1;
+use Test::More;
 
 use App::CamelPKI::Certificate;
 use App::CamelPKI::PrivateKey;
@@ -27,9 +27,18 @@ use App::CamelPKI::Test qw(jsoncall_remote plaintextcall_remote);
 use App::CamelPKI::Error;
 
 my $webserver = App::CamelPKI->model("WebServer")->apache;
+if ($webserver->is_installed_and_has_perl_support && $webserver->is_operational) {
+	plan tests => 16;
+} else {
+	plan skip_all => "Apache is not insalled or Key Ceremnoy has not been done !";
+}
 $webserver->start(); END { $webserver->stop(); }
 $webserver->tail_error_logfile();
+
 my $port = $webserver->https_port();
+
+
+
 our ($cert, $key) = App::CamelPKI->model("CA")->make_admin_credentials;
 
 =head1 TEST OVERVIEW
@@ -53,7 +62,7 @@ certify("VPN",
 foreach my $i (0..$#certs) {
     ok($certs[$i]->isa("App::CamelPKI::Certificate"),
        "certificate $i isa App::CamelPKI::Certificate");
-    ok(! cert_is_revoked($certs[$i], "certificate $i is valid"));
+    ok(! cert_is_revoked($certs[$i]), "certificate $i is valid");
 }
 
 revoke("VPN", { dns => $testhost1 });
@@ -76,7 +85,7 @@ certify("SSL",
         { template => "SSLServer", dns => $testhost1 },
         { template => "SSLClient", role => "play" });
 
-is(scalar(@certs), 2);
+is(scalar(@certs), 2, "2 Certificates issued");
 grep { ok(! cert_is_revoked($_), "no certs revoked yet") } @certs;
 
 revoke("SSL", { dns => $testhost1 });
@@ -101,10 +110,10 @@ group at once.
 =cut
 
 try {
-    revoke("BB", {});
+    revoke("VPN", {});
     fail;
 } catch Error with {
-    pass;
+    pass "Can't revoke whole group (VPN)";
 };
 
 

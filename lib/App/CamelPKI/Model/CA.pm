@@ -334,7 +334,7 @@ __END__
 
 use Fatal qw(mkdir);
 use File::Spec::Functions qw(catfile catdir);
-use Test::More no_plan => 1;
+use Test::More qw(no_plan);
 use Test::Group;
 use App::CamelPKI::Error;
 use App::CamelPKI::Test;

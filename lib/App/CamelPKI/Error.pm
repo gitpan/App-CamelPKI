@@ -219,7 +219,7 @@ require My::Tests::Below unless caller();
 
 __END__
 
-use Test::More no_plan => 1;
+use Test::More qw(no_plan);
 use Test::Group;
 use App::CamelPKI::Error;
 

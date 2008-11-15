@@ -67,7 +67,7 @@ __END__
 
 =cut
 
-use Test::More no_plan => 1;
+use Test::More qw(no_plan);
 use Test::Group;
 use File::Slurp;
 use App::CamelPKI::Test qw(test_CRL %test_rootca_certs %test_public_keys

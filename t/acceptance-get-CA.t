@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More no_plan => 1;
+use Test::More;
 use App::CamelPKI;
 use App::CamelPKI::Test qw(plaintextcall_remote
                       certificate_chain_ok run_thru_openssl);
@@ -11,11 +11,17 @@ use File::Slurp qw(write_file);
 use File::Spec::Functions qw(catfile);
 use LWP::UserAgent;
 
-my $webserver = App::CamelPKI->model("WebServer")->apache;
 
+my $webserver = App::CamelPKI->model("WebServer")->apache;
+if ($webserver->is_installed_and_has_perl_support && $webserver->is_operational) {
+	plan tests => 4;
+} else {
+	plan skip_all => "Apache is not insalled or Key Ceremnoy has not been done !";
+}
 $webserver->start(); END { $webserver->stop(); }
 $webserver->tail_error_logfile();
-our $port = $webserver->https_port();
+
+my $port = $webserver->https_port();
 
 sub request {
     my ($uri) = @_;

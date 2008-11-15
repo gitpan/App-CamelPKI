@@ -1,0 +1,13 @@
+^_build
+^Build$
+^blib
+~$
+\.bak$
+^var
+\.svn
+^\.project$
+^app_camelpki.yml$
+^.settings
+^.includepath$
+^Makefile$
+^App-CamelPKI-.*\.tar\.gz$

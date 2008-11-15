@@ -38,6 +38,8 @@ my $builder = My::Module::Build->new
        'DBD::SQLite'                        => 0,
        'Test::Group'						=> 0,
        'Test::More'							=> 0,
+       'App::Info::HTTPD::Apache'			=> 0,
+       'File::Slurp'						=> 0,
 
        # The following modules won't probably last ad vitam within
        # App-CamelPKI:
@@ -57,6 +59,8 @@ my $builder = My::Module::Build->new
        'Test::Builder'                     => 0,
        'Test::More'                        => 0,
        'Test::Group'                       => 0,
+       'Test::NoBreakpoints'			   => 0,
+       'Test::Pod::Coverage'			   => 1.04,
        'File::Which'                       => 0,
        'File::Slurp'					   => 0,
        'File::Find'						   => 0,
@@ -73,6 +77,7 @@ my $builder = My::Module::Build->new
        'HTTP::Request::Common'				=> 0,
        'HTTP::Request'						=> 0,
        'URI::URL'							=> 0,
+       'Module::ScanDeps'					=> 0,
       },
     add_to_cleanup      => [ '*.gz', 'Build', 'META.yml' ],
     create_makefile_pl  => 'passthrough',

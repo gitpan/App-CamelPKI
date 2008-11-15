@@ -8,20 +8,26 @@ use warnings;
 CRL.t - test the CRL in a various way.
 =cut
 
-use Test::More no_plan => 1;
+use Test::More;
 
-BEGIN {
-    use_ok 'Catalyst::Test', 'App::CamelPKI';
-    use_ok 'Test::Group';
-    use_ok 'Catalyst::Utils';
-    use_ok 'App::CamelPKI::Test';
-}
+use Catalyst::Test;
+use App::CamelPKI;
+use Test::Group;
+use Catalyst::Utils;
+use App::CamelPKI::Test;
+
 
 my $webserver = App::CamelPKI->model("WebServer")->apache;
+if ($webserver->is_installed_and_has_perl_support && $webserver->is_operational) {
+	plan tests => 1;
+} else {
+	plan skip_all => "Apache is not insalled or Key Ceremnoy has not been done !";
+}
 $webserver->start(); END { $webserver->stop(); }
 $webserver->tail_error_logfile();
 
 my $port = $webserver->https_port();
+
 my ($CAcert, $CAkey) = App::CamelPKI->model("CA")->make_admin_credentials;
 
 test "CRL in plain text" => sub {

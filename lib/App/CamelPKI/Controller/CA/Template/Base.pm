@@ -276,9 +276,11 @@ name in any of the templates that this controller class deals with.
 sub revokeJSON : Local :  ActionClass("+App::CamelPKI::Action::JSON") {
     my ($self, $c, $revocdetails) = @_;
 
+	print "\n\n\n 1-- ".Data::Dumper::Dumper($self->_revocation_keys."\n\n\n");
     my $ca = $c->model("CA")->instance;
     foreach my $shorttemplate ($self->_list_template_shortnames()) {
         my $template = "App::CamelPKI::CertTemplate::$shorttemplate";
+        
         my @revocation_criteria =
             map { exists($revocdetails->{$_}) ?
                       ($_ => $revocdetails->{$_}) :

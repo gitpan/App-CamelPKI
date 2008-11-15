@@ -649,7 +649,7 @@ __END__
 
 =cut
 
-use Test::More no_plan => 1;
+use Test::More qw(no_plan);
 use Test::Group;
 use File::Spec::Functions qw(catdir catfile);
 use Fatal qw(mkdir);

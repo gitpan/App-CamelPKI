@@ -401,6 +401,59 @@ sub is_wedged {
     $self->_process_ready xor $self->_port_ready;
 }
 
+sub _has_mod_apsx_support{
+	my ($mod_name) = @_;
+	
+	my @mods = `apxs2 -q LIBEXECDIR | xargs ls | sed 's/\.so//'`;
+	foreach (@mods){
+	 	$_ =~ s/\n//g;
+		return 1 if ($_ =~ /$mod_name/);
+	}
+	return 0;
+}
+
+=head2 is_installed_and_has_perl_support()
+
+Returns true if Apache id installed and has perl support as a static or shared module, 
+false otherwise.
+
+=cut
+
+sub is_installed_and_has_perl_support {
+	use App::Info::HTTPD::Apache;
+	my $apache = App::Info::HTTPD::Apache->new;
+	
+	return $apache->mod_perl if $apache->mod_perl;
+	
+	#We are giving a last chance for ubuntu as App::Info::HTTPD::Apache
+	# doesn't seems to detect reallay good modules
+	return _has_mod_apsx_support("mod_perl");
+}
+
+=head2 is_installed_and_has_php_support()
+
+Returns true if Apache id installed and has php support as a static or shared module, 
+false otherwise.
+
+=cut
+
+sub is_installed_and_has_php_support {
+	use App::Info::HTTPD::Apache;
+	my $apache = App::Info::HTTPD::Apache->new;
+	
+	eval {
+		foreach ($apache->static_mods){
+			return 1 if ($_ =~ /libphp5/);		
+		}
+		foreach ($apache->shared_mods){
+			return 1 if ($_ =~ /libphp5/);		
+		}
+	};
+	
+	#Still last chance for Ubuntu ...
+	return _has_mod_apsx_support("libphp5");
+}
+
 =head2 is_current_interpreter()
 
 Returns true iff the Perl interpreter we're currently running under is
@@ -686,6 +739,7 @@ PERLSWITCHES
     }
 
     # FIXME: this is Gentoo- and  Edgy-specific.
+    #TODO : refactor for using the App::Info::HTTP :)
     my %module_paths =
         (alias => "/usr/lib/apache2/modules/mod_alias.so",
          perl => "/usr/lib/apache2/modules/mod_perl.so",
@@ -698,15 +752,17 @@ PERLSWITCHES
     push @mods_to_configure, qw(perl ssl); # Unconditionally needed
 
     my $phpstuff = "";
-    if (defined(my $phpdir = $self->test_php_directory)) {
-        push(@mods_to_configure, "php5", "alias", "mime");
-        $phpstuff = <<"PHPSTUFF";
+    if (is_installed_and_has_php_support()) {
+    	if (defined(my $phpdir = $self->test_php_directory)) {
+        	push(@mods_to_configure, "php5", "alias", "mime");
+        	$phpstuff = <<"PHPSTUFF";
 #### PHP test directory
 Alias /t/php "$phpdir"
 <location /t/php>
   AddType application/x-httpd-php .php
 </location>
 PHPSTUFF
+    	}
     }
 
     my $modmime= "";
@@ -811,7 +867,7 @@ __END__
 
 =cut
 
-use Test::More no_plan => 1;
+use Test::More qw(no_plan);
 use Test::Group;
 use Fatal qw(mkdir);
 use File::Slurp;
@@ -904,6 +960,14 @@ my $directory = fresh_directory;
 END { App::CamelPKI::SysV::Apache->load($directory)->stop()
     if defined $directory; }
 
+SKIP: {
+	use App::CamelPKI; 
+	my $webserver = App::CamelPKI->model("WebServer")->apache;
+	
+	skip "Apache is not installed or Key Ceremony has not been done", 13 
+		unless ($webserver->is_installed_and_has_perl_support);
+
+	
 test "Quiet state" => sub {
     my $apache = load App::CamelPKI::SysV::Apache($directory);
     is($apache->https_port, 3443, "We probably aren't root");
@@ -916,17 +980,17 @@ test "Quiet state" => sub {
 };
 
 test "synopsis" => sub {
-    App::CamelPKI::SysV::Apache->load($directory)->stop();
+    	App::CamelPKI::SysV::Apache->load($directory)->stop();
 
-    my $cert = App::CamelPKI::Certificate->parse($test_entity_certs{rsa1024});
-    my $key = App::CamelPKI::PrivateKey->parse($test_keys_plaintext{rsa1024});
-    my $opcacert = $rootcacert; # Heh.
-    my $code = My::Tests::Below->pod_code_snippet("synopsis");
-    ok($code =~ s/\bmy /our /g);
-    ok($code =~ s/443/12345/g); # Since we are not root
-    eval "package Synopsis; $code"; die $@ if $@;
-    is($Synopsis::apache->https_port, 12345, "port number was remembered");
-    ok($Synopsis::apache->is_operational);
+    	my $cert = App::CamelPKI::Certificate->parse($test_entity_certs{rsa1024});
+    	my $key = App::CamelPKI::PrivateKey->parse($test_keys_plaintext{rsa1024});
+    	my $opcacert = $rootcacert; # Heh.
+    	my $code = My::Tests::Below->pod_code_snippet("synopsis");
+    	ok($code =~ s/\bmy /our /g);
+    	ok($code =~ s/443/12345/g); # Since we are not root
+    	eval "package Synopsis; $code"; die $@ if $@;
+    	is($Synopsis::apache->https_port, 12345, "port number was remembered");
+    	ok($Synopsis::apache->is_operational);
 };
 
 make_apache_operational($directory);
@@ -994,47 +1058,59 @@ test "->is_running_under returns false in a normal Perl" => sub {
     ok(! App::CamelPKI::SysV::Apache->is_running_under);
 };
 
-
-test "App::CamelPKI service" => sub {
-    my $webserver = App::CamelPKI::SysV::Apache->load($directory);
-    $webserver->start();
-    my $ca = LWP::Simple::get("https://localhost:12345/ca/certificate_pem");
-    like($ca, qr/BEGIN CERTIFICATE/)
-        or warn $webserver->tail_error_logfile;
+SKIP: {
+	use App::CamelPKI;
+	my $webserver = App::CamelPKI->model("WebServer")->apache;
+	
+	skip "Key Ceremony has not been done", 1 
+		unless $webserver->is_operational; 
+		
+	test "App::CamelPKI service" => sub {
+    	my $webserver = App::CamelPKI::SysV::Apache->load($directory);
+    	$webserver->start();
+    	my $ca = LWP::Simple::get("https://localhost:12345/ca/certificate_pem");
+    	like($ca, qr/BEGIN CERTIFICATE/)
+        	or warn $webserver->tail_error_logfile;
+	}
 };
 
 mkdir(my $phpdir = catdir(My::Tests::Below->tempdir, "php"));
+SKIP: {
+	use App::CamelPKI; 
+	my $webserver = App::CamelPKI->model("WebServer")->apache;
+		skip "modphp is not installed", 2
+			unless ($webserver->is_installed_and_has_php_support);
 
-test "PHP pages in t/php" => sub {
-    my $webserver = App::CamelPKI::SysV::Apache->load($directory);
-    is($webserver->test_php_directory, undef);
-    $webserver->test_php_directory($phpdir);
-    $webserver->stop(); $webserver->start();
-    $webserver = App::CamelPKI::SysV::Apache->load($directory);
-    is($webserver->test_php_directory, $phpdir,
-       "test_php_directory persistent");
-    write_file(catfile($phpdir, "phpinfo.php"), <<"PHPINFO");
+	test "PHP pages in t/php" => sub {
+    	my $webserver = App::CamelPKI::SysV::Apache->load($directory);
+    	is($webserver->test_php_directory, undef);
+    	$webserver->test_php_directory($phpdir);
+    	$webserver->stop(); $webserver->start();
+    	$webserver = App::CamelPKI::SysV::Apache->load($directory);
+    	is($webserver->test_php_directory, $phpdir,
+       		"test_php_directory persistent");
+    	write_file(catfile($phpdir, "phpinfo.php"), <<"PHPINFO");
 <?php
 phpinfo();
 ?>
 PHPINFO
-    my $phpinfo = LWP::Simple::get
-        ("https://localhost:12345/t/php/phpinfo.php");
-    like($phpinfo, qr/www\.php\.net/);
-};
+	    my $phpinfo = LWP::Simple::get
+    	    ("https://localhost:12345/t/php/phpinfo.php");
+    	like($phpinfo, qr/www\.php\.net/);
+	};
 
-use IO::Socket::SSL;
-use LWP::UserAgent;
-use App::CamelPKI::Test qw(http_request_prepare http_request_execute);
-test "SSL client w/ certificate" => sub {
-    my $webserver = App::CamelPKI::SysV::Apache->load($directory);
-    unless ($webserver->test_php_directory) {
-        $webserver->test_php_directory($phpdir);
-        $webserver->stop();
-    }
-    $webserver->start();
+	use IO::Socket::SSL;
+	use LWP::UserAgent;
+	use App::CamelPKI::Test qw(http_request_prepare http_request_execute);
+	test "SSL client w/ certificate" => sub {
+    	my $webserver = App::CamelPKI::SysV::Apache->load($directory);
+    	unless ($webserver->test_php_directory) {
+        	$webserver->test_php_directory($phpdir);
+        	$webserver->stop();
+    	}
+    	$webserver->start();
 
-    write_file(catfile($phpdir, "ssl_vars.php"), <<'PHP_SSL_VARS');
+    	write_file(catfile($phpdir, "ssl_vars.php"), <<'PHP_SSL_VARS');
 $_SERVER["HTTPS"]             = <?php print $_SERVER["HTTPS"] ?>
 
 $_SERVER["SSL_CLIENT_VERIFY"] = <?php print $_SERVER["SSL_CLIENT_VERIFY"] ?>
@@ -1043,22 +1119,23 @@ $_SERVER["SSL_CLIENT_S_DN"]   = <?php print $_SERVER["SSL_CLIENT_S_DN"] ?>
 
 PHP_SSL_VARS
 
-    my $req = http_request_prepare
-        ('https://localhost:12345/t/php/ssl_vars.php');
-    my $response = http_request_execute($req);
-    die $response->content unless $response->is_success;
-    like($response->content, qr/HTTPS.* = on/);
-    like($response->content, qr/SSL_CLIENT_VERIFY.* = NONE/);
+	    my $req = http_request_prepare
+    	    ('https://localhost:12345/t/php/ssl_vars.php');
+    	my $response = http_request_execute($req);
+    	die $response->content unless $response->is_success;
+    	like($response->content, qr/HTTPS.* = on/);
+    	like($response->content, qr/SSL_CLIENT_VERIFY.* = NONE/);
 
-    my %opts = (-certificate => $test_entity_certs{"rsa1024"},
-                -key => $test_keys_plaintext{"rsa1024"});
-    $req = http_request_prepare
-        ('https://localhost:12345/t/php/ssl_vars.php', %opts);
-    $response = http_request_execute($req, %opts);
-    die $response->content unless $response->is_success;
-    like($response->content, qr/HTTPS.* = on/);
-    like($response->content, qr/SSL_CLIENT_VERIFY.* = SUCCESS/);
-    like($response->content, qr/SSL_CLIENT_S_DN.* = .*CN=John Doe/);
+    	my %opts = (-certificate => $test_entity_certs{"rsa1024"},
+                	-key => $test_keys_plaintext{"rsa1024"});
+    	$req = http_request_prepare
+        	('https://localhost:12345/t/php/ssl_vars.php', %opts);
+    	$response = http_request_execute($req, %opts);
+    	die $response->content unless $response->is_success;
+    	like($response->content, qr/HTTPS.* = on/);
+    	like($response->content, qr/SSL_CLIENT_VERIFY.* = SUCCESS/);
+    	like($response->content, qr/SSL_CLIENT_S_DN.* = .*CN=John Doe/);
+	};
 };
 
 use App::CamelPKI::Test qw(certificate_chain_ok);
@@ -1137,7 +1214,7 @@ test "REGRESSION: authenticating with sha256 client certificates" => sub {
     make_bogus_keypair_using_hash("sha256", $admincertfile, $adminkeyfile);
     ok_connect_no_hiccups($webserver, $admincertfile, $adminkeyfile);
 };
-
+};
 =end internals
 
 =cut

@@ -415,7 +415,7 @@ __END__
 sub foo {
 }
 
-use Test::More no_plan => 1;
+use Test::More qw(no_plan);
 use Test::Group;
 use App::CamelPKI::Test
     qw(%test_rootca_certs %test_keys_plaintext %test_public_keys
@@ -448,7 +448,7 @@ test "normalize_opts" => sub {
 
     my %got = Bogus::Template->App::CamelPKI::CertTemplate::normalize_opts
          (bar => [ qw( ba pa pa ) ],
-         foo => JSON::jsonToObj('"yourself"'),
+         foo => JSON::from_json('"yourself"'),
          main => "screen",
          turn => "on");
     is_deeply(\%got, {

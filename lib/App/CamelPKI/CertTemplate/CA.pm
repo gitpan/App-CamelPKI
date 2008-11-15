@@ -29,7 +29,7 @@ sub prepare_self_signed_certificate {
     my ($class, $cert) = @_;
 
     my $start_date = App::CamelPKI::Time->now;
-    my $end_date = $start_date->advance_years(30);
+    my $end_date = $start_date->advance_years(20);
     $cert->set_notBefore($start_date->zulu);
     $cert->set_notAfter($end_date->zulu);
 
@@ -107,7 +107,7 @@ __END__
 
 =cut
 
-use Test::More no_plan => 1;
+use Test::More qw(no_plan);
 use Test::Group;
 use App::CamelPKI::Test "%test_public_keys", "certificate_chain_ok", "%test_keys_plaintext";
 use App::CamelPKI::PrivateKey;

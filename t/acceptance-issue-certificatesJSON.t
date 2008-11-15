@@ -10,7 +10,7 @@ new certificates.
 
 =cut
 
-use Test::More no_plan => 1;
+use Test::More;
 
 use App::CamelPKI::Certificate;
 use App::CamelPKI::PrivateKey;
@@ -18,6 +18,11 @@ use App::CamelPKI;
 use App::CamelPKI::Test qw(jsoncall_remote);
 
 my $webserver = App::CamelPKI->model("WebServer")->apache;
+if ($webserver->is_installed_and_has_perl_support && $webserver->is_operational) {
+	plan tests => 5;
+} else {
+	plan skip_all => "Apache is not insalled or Key Ceremnoy has not been done !";
+}
 $webserver->start(); END { $webserver->stop(); }
 $webserver->tail_error_logfile();
 
