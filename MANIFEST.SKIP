@@ -8,6 +8,7 @@
 ^\.project$
 ^app_camelpki.yml$
 ^.settings
-^.includepath$
+^.require_oncepath$
 ^Makefile$
 ^App-CamelPKI-.*\.tar\.gz$
+^.includepath$

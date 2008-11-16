@@ -107,7 +107,11 @@ Sends back in a text file in DER format the CRL.
 sub download_crl : Local{
 	my ($self, $c) = @_;
 	$c->response->content_type("application/octet-stream");
-    $c->response->body($c->model("CA")->instance->issue_crl->serialize);
+	my $crl = App::CamelPKI::CRL->parse(
+					$c->model("CA")->instance->issue_crl->serialize,
+					-format => "PEM");
+					
+    $c->response->body($crl->serialize(-format => "DER"));
 }
 
 =item I<list_issued_certificates>

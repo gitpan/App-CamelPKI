@@ -1,6 +1,9 @@
 Revision history for Camel-PKI
 
-0.05	2008/*/*
+0.06	2008/11/16
+		Correction of a bug in getting the CRL in DER format
+
+0.05	2008/11/15
 		Refactoring of tests
 		Correction of function using json due to deprecation of the old-ones
 		Adding detection of environment in order to run tests ... or not :)

@@ -946,7 +946,7 @@ sub ACTION_build {
 
 Overloaded so that typing C<./Build dist> does The Right Thing and
 regenerates everything that is needed in order to create the
-distribution tarball. This includes the C<Makefile.PL> if so requested
+distribution tarball. This require_onces the C<Makefile.PL> if so requested
 (see L<Module::Build::Compat/create_makefile_pl>) and the C<MANIFEST>
 file (see L<Module::Build/manifest>).  On the other hand, the
 C<META.yml> file is not regenerated automatically, so that the author

@@ -1072,7 +1072,7 @@ sub run_php_script {
 
     my $out;
     IPC::Run::run([$php, "--php-ini", "t/php/php-json.ini",
-                   -d => 'include_path=t/php',
+                   -d => 'require_once_path=t/php',
                    $phpscript],
                   \"", \$out, \$out);
     return $out;
