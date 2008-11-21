@@ -29,7 +29,9 @@ deals with.
 
 =cut
 
-sub _list_template_shortnames { qw(VPN1) }
+sub _list_template_shortnames { qw(VPN1 OpenVPNServer OpenVPNClient) }
+
+sub _revocation_keys { ("dns", "email") }
 
 sub _form_certify_template { "certificate/VPN_form_certify.tt2" }
 

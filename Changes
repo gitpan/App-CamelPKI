@@ -1,5 +1,10 @@
 Revision history for Camel-PKI
 
+0.07	2008/11/21
+		Modification of views to give more information
+		Added templates for OpenVPN clients and servers
+		Tests refactoring in App::CamelPKI::CertTemplate::VPN
+
 0.06	2008/11/16
 		Correction of a bug in getting the CRL in DER format
 

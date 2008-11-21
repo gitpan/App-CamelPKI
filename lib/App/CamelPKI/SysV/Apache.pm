@@ -815,6 +815,8 @@ ScoreBoardFile        $homedir/httpd.scoreboard
 SSLEngine on
 # Dissect SSL connection info into \$r->subprocess_env:
 SSLOptions +StdEnvVars +ExportCertData
+#Minor Bug in Firefox 3.0 :
+SSLProtocol all -TLSv1
 # Ask for a certificate every time, but do not barf if none is given:
 SSLVerifyClient optional
 # Work around some of the rampant OpenSSL braindamage:

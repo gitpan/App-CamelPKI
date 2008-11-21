@@ -35,7 +35,7 @@ test "demande unique" => sub {
  	my $dns = "monsite.com";
  	my $res = 
  	jsoncall_local("http://localhost:3000/ca/template/vpn/certifyJSON",
- 		{"requests" , [ {"template" => "VPN1", "dns" => $dns} ] });
+ 		{"requests" , [ {"template" => "OpenVPNServer", "dns" => $dns} ] });
 
 	is(scalar(@{$res->{keys}}), 1, "1 answer");
 
@@ -51,15 +51,18 @@ test "demande unique" => sub {
  
  
  
-test "deux certificats (VPN1 et VPN2)" => sub {
-	my $dns1 = "monsite.com";
- 	my $dns2 = "monsite2.com";
+test "three certificates (VPN1, OpenVPNServer, et OpenVPNClient)" => sub {
+	my $dns_vpn = "monsite.com";
+ 	my $dns_openvpnserver = "monsite2.com";
+ 	my $email_openvpnclient = 'pki@camelpki.com';
+ 	
  	my $res = 
  	jsoncall_local("http://localhost:3000/ca/template/vpn/certifyJSON",
- 		{"requests" , [ {"template" => "VPN1", "dns" => $dns1},
-                                {"template" => "VPN1", "dns" => $dns2} ] });
+ 		{"requests" , [ {"template" => "VPN1", "dns" => $dns_vpn},
+                                {"template" => "OpenVPNServer", "dns" => $dns_openvpnserver},
+                                {"template" => "OpenVPNClient", "email" => $email_openvpnclient} ] });
 
-	is(scalar(@{$res->{keys}}), 2, "2 answers");
+	is(scalar(@{$res->{keys}}), 3, "3 answers");
 	
 	foreach my $keyandcert (@{$res->{keys}}) {
             my $cert = $keyandcert->[0];

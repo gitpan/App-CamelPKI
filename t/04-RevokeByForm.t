@@ -93,7 +93,7 @@ test "Revocation SSLClient" => sub {
 
 test "Revocation VPN" => sub {
 	
-	my $cert = certify("vpn", "VPN", "dns", "test.foo.com");
+	my $cert = certify("vpn", "VPN1", "dns", "test.foo.com");
 	
 	ok(! cert_is_revoked($cert), "Certificate not inserted ?");
 	
@@ -110,17 +110,11 @@ Certify the certificate.
 
 sub certify {
 	my ($type_cert, $template, $type, $data) = @_;
-	my $req;
-	if ($template =~ qw/VPN/){
-		$req = {
-			$type => $data,
-		};
-	}else {
-		$req = {
+	my $req = {
 			"template" => $template,
 			$type => $data,
 		};
-	}
+
 	my $resp_server = formcall_remote
    		("https://localhost:$port/ca/template/$type_cert/certifyForm", $req, "Submit",
    	 		-certificate => $CAcert, -key => $CAkey);

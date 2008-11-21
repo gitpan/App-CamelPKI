@@ -21,7 +21,7 @@ use App::CamelPKI::Test;
 
 my $webserver = App::CamelPKI->model("WebServer")->apache;
 if ($webserver->is_installed_and_has_perl_support && $webserver->is_operational) {
-	plan tests => 3;
+	plan tests => 5;
 } else {
 	plan skip_all => "Apache is not insalled or Key Ceremnoy has not been done !";
 }
@@ -49,6 +49,14 @@ my $reqSSLClient = {
 
 my $reqVPN = {
 		("dns" => "test.foo.bar.com")
+};
+
+my $reqOpenVPNServer = {
+		("dns" => "test.foo.bar.com")
+};
+
+my $reqOpenVPNClient = {
+		("dns" => 'pki@pki.com')
 };
 
 =pod
@@ -90,6 +98,20 @@ test "Revocation VPN" => sub {
 	
 	revoke("vpn", {"dns", "test.foo.com"});
 
+	ok(cert_is_revoked($cert), "Certificate not revoked !");
+};
+
+test "Revocation OpenVPNServer" => sub {
+	my $cert = certify("vpn", "OpenVPNServer", "dns", "test.openvpn.com");
+	ok(! cert_is_revoked($cert), "Certificate not inserted ?");
+	revoke("vpn", {"dns", "test.openvpn.com"});
+	ok(cert_is_revoked($cert), "Certificate not revoked !");
+};
+
+test "Revocation OpenVPNServer" => sub {
+	my $cert = certify("vpn", "OpenVPNClient", "email", 'pki@pki.com');
+	ok(! cert_is_revoked($cert), "Certificate not inserted ?");
+	revoke("vpn", {"email", 'pki@pki.com'});
 	ok(cert_is_revoked($cert), "Certificate not revoked !");
 };
 

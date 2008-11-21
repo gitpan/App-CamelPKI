@@ -19,7 +19,7 @@ use App::CamelPKI::Test;
 
 my $webserver = App::CamelPKI->model("WebServer")->apache;
 if ($webserver->is_installed_and_has_perl_support && $webserver->is_operational) {
-	plan tests => 1;
+	plan tests => 2;
 } else {
 	plan skip_all => "Apache is not insalled or Key Ceremnoy has not been done !";
 }
@@ -37,6 +37,13 @@ test "CRL in plain text" => sub {
 	like($response, qr/-----BEGIN X509 CRL-----/);
 	like($response, qr/-----END X509 CRL-----/);
 };
+
+SKIP: {
+	skip "Not implemented", 1 if 1;
+	test "CRL in DER Format" => sub {
+		#TODO : code the test
+	};
+}
 
 
 

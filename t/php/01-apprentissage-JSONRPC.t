@@ -26,7 +26,7 @@ if ($webserver->is_installed_and_has_perl_support && $webserver->is_operational
 	&& App::CamelPKI::Test->is_php_cli_present) {
 	plan tests => 1;
 } else {
-	plan skip_all => "Apache (and/or mod_perl) or php-cli is not insalled or Key Ceremnoy has not been done !";
+	plan skip_all => "Apache (and/or mod_perl) or php-cli is not insalled or Key Ceremony has not been done !";
 }
 $webserver->start(); END { $webserver->stop(); }
 $webserver->tail_error_logfile();
